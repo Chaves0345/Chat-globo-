@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ChatApp Pro | Ultra Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --primary: #007bff; --accent: #00d4ff; --bg-dark: #05050a; 
+            --card-bg: rgba(20, 20, 35, 0.8); --text-main: #ffffff; 
+            --text-dim: #a0a0b8; --glass: rgba(255, 255, 255, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { 
+            height: 100vh; display: flex; justify-content: center; align-items: center; 
+            background: var(--bg-dark); color: var(--text-main); overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #101025 0%, #05050a 100%);
+        }
+        .orb {
+            position: absolute; width: 300px; height: 300px; border-radius: 50%;
+            background: var(--primary); filter: blur(100px); opacity: 0.15;
+            animation: move 20s infinite alternate; z-index: 1;
+        }
+        @keyframes move { from { transform: translate(-100px, -100px); } to { transform: translate(100px, 100px); } }
+        
+        .app { 
+            width: 400px; height: 820px; border-radius: 45px; background: var(--card-bg); 
+            backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); 
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8); z-index: 10;
+        }
+        .screen { flex: 1; display: flex; flex-direction: column; padding: 30px; animation: fadeIn 0.4s ease; }
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
+
+        input { 
+            width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
+            padding: 18px; border-radius: 20px; color: white; margin-bottom: 12px; outline: none; 
+        }
+        button { 
+            border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); 
+            padding: 18px; border-radius: 20px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; 
+        }
+        button:active { transform: scale(0.95); }
+        .secondary { background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-top: 10px; }
+
+        /* Chat UI */
+        #chat-screen { position: absolute; inset: 0; background: #080812; z-index: 20; display: flex; flex-direction: column; }
+        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 14px 18px; border-radius: 22px; max-width: 85%; font-size: 14px; animation: messageSlide 0.3s ease-out; }
+        @keyframes messageSlide { from { opacity: 0; transform: scale(0.9); } }
+        .msg.me { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); border-bottom-right-radius: 4px; }
+        .msg.other { align-self: flex-start; background: #1c1c30; border-bottom-left-radius: 4px; }
+        .msg small { display: block; font-size: 10px; margin-bottom: 5px; font-weight: 600; opacity: 0.7; }
+        .chat-input-area { padding: 20px; display: flex; gap: 10px; background: rgba(10,10,20,0.9); }
+    </style>
+</head>
+<body>
+
+<div class="orb"></div>
+
+<div class="app">
+    <div id="login-screen" class="screen">
+        <div style="font-size: 60px; text-align: center; margin: 60px 0 20px;">💎</div>
+        <h1 style="text-align:center;">Bem-vindo</h1>
+        <p style="text-align:center; color:var(--text-dim); margin-bottom:40px;">Acesse sua conta</p>
+        <input type="email" id="loginEmail" placeholder="E-mail">
+        <input type="password" id="loginPass" placeholder="Senha">
+        <button id="btnEntrar">Entrar</button>
+        <button id="btnIrParaRegistro" class="secondary">Criar Conta Nova</button>
+    </div>
+
+    <div id="register-screen" class="screen hidden">
+        <div style="font-size: 50px; text-align: center; margin: 40px 0 20px;">📝</div>
+        <h1 style="text-align:center;">Nova Conta</h1>
+        <p style="text-align:center; color:var(--text-dim); margin-bottom:30px;">Preencha seus dados</p>
+        <input type="text" id="regNome" placeholder="Seu Nome (como aparecerá no chat)">
+        <input type="email" id="regEmail" placeholder="Seu melhor e-mail">
+        <input type="password" id="regPass" placeholder="Senha (mínimo 6 dígitos)">
+        <button id="btnConfirmarRegistro">Cadastrar e Entrar</button>
+        <button id="btnVoltarLogin" class="secondary">Já tenho conta</button>
+    </div>
+
+    <div id="home-screen" class="screen hidden">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h2 id="welcome-user">Olá!</h2>
+            <button id="btnSair" style="background:#ff4757; padding: 10px 15px; border-radius: 15px; font-size: 12px;">Sair</button>
+        </div>
+        <div id="cardPublico" style="background: rgba(0,123,255,0.1); padding: 30px; border-radius: 30px; cursor: pointer; border: 1px solid var(--primary);">
+            <strong>💬 Chat Global</strong>
+            <p style="font-size: 13px; color: var(--text-dim); margin-top: 10px;">Clique aqui para entrar na conversa em tempo real.</p>
+        </div>
+    </div>
+
+    <div id="chat-screen" class="hidden">
+        <div style="padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <button id="btnVoltar" style="background:none; color:white; font-size: 20px;">←</button>
+            <strong>Chat Global</strong>
+        </div>
+        <div class="messages-area" id="chat-msgs"></div>
+        <div class="chat-input-area">
+            <input type="text" id="msgInput" placeholder="Sua mensagem..." style="margin:0">
+            <button id="btnEnviar">➤</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyANKLtlqp8lb1En3SoONAoQHPa3bENTNG4",
+        authDomain: "chat-61862.firebaseapp.com",
+        projectId: "chat-61862",
+        storageBucket: "chat-61862.firebasestorage.app",
+        messagingSenderId: "843380257397",
+        appId: "1:843380257397:web:d349c321c12b6f9aa0be3c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    // --- NAVEGAÇÃO ENTRE TELAS ---
+    const show = (id) => {
+        document.querySelectorAll('.screen, #chat-screen').forEach(s => s.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    document.getElementById('btnIrParaRegistro').onclick = () => show('register-screen');
+    document.getElementById('btnVoltarLogin').onclick = () => show('login-screen');
+    document.getElementById('btnVoltar').onclick = () => show('home-screen');
+    document.getElementById('cardPublico').onclick = () => { show('chat-screen'); carregarMensagens(); };
+
+    // --- MONITOR DE LOGIN ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            show('home-screen');
+            document.getElementById('welcome-user').innerText = "Olá, " + (user.displayName || user.email.split('@')[0]);
+        } else {
+            show('login-screen');
+        }
+    });
+
+    // --- AÇÃO DE REGISTRO ---
+    document.getElementById('btnConfirmarRegistro').onclick = async () => {
+        const nome = document.getElementById('regNome').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const pass = document.getElementById('regPass').value;
+
+        if(!nome || !email || pass.length < 6) return alert("Preencha todos os campos corretamente!");
+
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(userCred.user, { displayName: nome });
+            alert("Sucesso! Bem-vindo, " + nome);
+        } catch (e) { alert("Erro ao criar: " + e.message); }
+    };
+
+    // --- AÇÃO DE LOGIN ---
+    document.getElementById('btnEntrar').onclick = async () => {
+        const email = document.getElementById('loginEmail').value.trim();
+        const pass = document.getElementById('loginPass').value;
+        try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Erro: " + e.message); }
+    };
+
+    document.getElementById('btnSair').onclick = () => signOut(auth);
+
+    // --- MENSAGENS ---
+    const enviarMsg = async () => {
+        const input = document.getElementById('msgInput');
+        if (input.value.trim() !== "" && auth.currentUser) {
+            await addDoc(collection(db, "mensagens"), {
+                texto: input.value,
+                usuario: auth.currentUser.displayName || auth.currentUser.email,
+                uid: auth.currentUser.uid,
+                createdAt: serverTimestamp()
+            });
+            input.value = "";
+        }
+    };
+    document.getElementById('btnEnviar').onclick = enviarMsg;
+    document.getElementById('msgInput').onkeypress = (e) => { if(e.key === 'Enter') enviarMsg(); };
+
+    function carregarMensagens() {
+        const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
+        onSnapshot(q, (snaps) => {
+            const area = document.getElementById('chat-msgs');
+            area.innerHTML = "";
+            snaps.forEach(doc => {
+                const d = doc.data();
+                if(!d.createdAt) return;
+                const div = document.createElement('div');
+                div.className = d.uid === auth.currentUser.uid ? 'msg me' : 'msg other';
+                div.innerHTML = `<small>${d.usuario}</small>${d.texto}`;
+                area.appendChild(div);
+            });
+            area.scrollTop = area.scrollHeight;
+        });
+    }
+</script>
+</body>
+</html>
