@@ -15,7 +15,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body, html { height: 100%; width: 100%; background: var(--bg-dark); color: var(--text-main); overflow: hidden; position: fixed; }
 
-        /* --- CENÁRIO CINEMATOGRÁFICO --- */
+        /* --- CENÁRIO --- */
         .universe { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 100%, #0a0a20 0%, #010103 100%); overflow: hidden; }
         .real-moon {
             position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
@@ -23,13 +23,11 @@
             background: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
             background-size: cover; border-radius: 50%;
             box-shadow: 0 0 80px rgba(255, 255, 255, 0.1), inset 20px -20px 50px rgba(0,0,0,0.8);
-            opacity: 0.8; filter: brightness(0.9);
-            animation: moonRotate 200s linear infinite;
+            opacity: 0.8; animation: moonRotate 200s linear infinite;
         }
         @keyframes moonRotate { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
-        .star-field { position: absolute; inset: 0; pointer-events: none; }
 
-        /* --- TELAS E ANIMAÇÕES --- */
+        /* --- TELAS --- */
         .app-container { position: relative; z-index: 10; height: 100%; width: 100%; }
         .screen { 
             position: absolute; inset: 0; padding: 25px; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -38,91 +36,72 @@
         }
         .screen-active { visibility: visible; opacity: 1; transform: translateY(0); }
 
-        /* --- NAVBAR --- */
-        .nav-bar { 
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(2,2,5,0.98); 
-            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; z-index: 1000;
-        }
-        .nav-btn { font-size: 24px; opacity: 0.3; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
-        .nav-btn:hover { transform: scale(1.2); }
-        .nav-btn.active { opacity: 1; color: var(--primary); transform: scale(1.1); }
-
-        /* --- MENSAGENS --- */
-        .msg-bubble { cursor: pointer; transition: 0.3s; position: relative; animation: msgPop 0.3s ease-out; }
-        @keyframes msgPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        /* --- CHAT ELEMENTOS --- */
+        .msg-bubble { cursor: pointer; transition: 0.3s; position: relative; animation: msgPop 0.3s ease-out; margin: 8px 0; }
+        @keyframes msgPop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
         .msg-time { font-size: 9px; opacity: 0.4; margin-top: 4px; display: block; text-align: right; }
-        .chat-img, .chat-video { max-width: 100%; border-radius: 12px; margin-top: 8px; display: block; border: 1px solid rgba(255,255,255,0.1); cursor: zoom-in; }
+        
+        /* Correção de Mídia */
+        .chat-img, .chat-video { 
+            max-width: 100%; max-height: 300px; border-radius: 12px; margin-top: 8px; 
+            display: block; border: 1px solid rgba(255,255,255,0.1); background: #000;
+        }
+        .user-pfp-chat { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; margin-right: 8px; border: 1px solid var(--primary); }
 
-        /* --- NOVO: MODAL DE OPÇÕES ANIMADO (Substitui o confirm) --- */
-        #action-sheet-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            z-index: 11000; display: none; align-items: flex-end; justify-content: center;
-        }
-        #action-sheet {
-            width: 100%; max-width: 500px; background: #0a0a15; border-radius: 25px 25px 0 0;
-            padding: 20px; border: 1px solid rgba(255,255,255,0.1);
-            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* --- PERFIL FOTO --- */
+        .pfp-container { width: 120px; height: 120px; margin: 0 auto 20px; position: relative; cursor: pointer; }
+        .pfp-main { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary); background: #111; }
+        .pfp-edit-badge { position: absolute; bottom: 5px; right: 5px; background: var(--primary); padding: 5px; border-radius: 50%; font-size: 12px; }
+
+        /* Action Sheet e Modais */
+        #action-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 11000; display: none; align-items: flex-end; justify-content: center; }
         #action-sheet-overlay.open { display: flex; }
+        #action-sheet { width: 100%; max-width: 500px; background: #0a0a15; border-radius: 25px 25px 0 0; padding: 20px; transform: translateY(100%); transition: 0.3s; }
         #action-sheet-overlay.open #action-sheet { transform: translateY(0); }
-        .sheet-btn {
-            width: 100%; padding: 18px; margin-bottom: 10px; border-radius: 15px; border: none;
-            color: white; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s;
-        }
-        .btn-edit { background: var(--primary); }
-        .btn-delete { background: rgba(255,71,87,0.2); color: #ff4757; }
-        .btn-cancel { background: #222; }
+        .sheet-btn { width: 100%; padding: 18px; margin-bottom: 10px; border-radius: 15px; border: none; color: white; font-weight: 600; cursor: pointer; }
 
-        /* Fullscreen Image */
-        #image-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.4s; }
-        #image-modal.open { display: flex; opacity: 1; }
-        #full-image { max-width: 95%; max-height: 90%; border-radius: 10px; }
-
-        /* Estilos Gerais */
-        .glass-box { background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); width: 100%; }
+        .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(2,2,5,0.98); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; z-index: 1000; }
+        .nav-btn { font-size: 24px; opacity: 0.3; transition: 0.3s; cursor: pointer; }
+        .nav-btn.active { opacity: 1; color: var(--primary); }
+        .hidden { display: none !important; }
         input, textarea { width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
         button { border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 16px; border-radius: 18px; color: white; font-weight: 700; cursor: pointer; }
-        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div id="action-sheet-overlay" onclick="closeActionSheet()">
     <div id="action-sheet" onclick="event.stopPropagation()">
-        <h4 style="text-align: center; margin-bottom: 20px; opacity: 0.7;">Opções da Mensagem</h4>
-        <button id="sheetEditBtn" class="sheet-btn btn-edit">Editar Mensagem</button>
-        <button id="sheetDeleteBtn" class="sheet-btn btn-delete">Apagar Mensagem</button>
-        <button onclick="closeActionSheet()" class="sheet-btn btn-cancel">Cancelar</button>
+        <button id="sheetEditBtn" class="sheet-btn" style="background: var(--primary);">Editar Mensagem</button>
+        <button id="sheetDeleteBtn" class="sheet-btn" style="background: rgba(255,71,87,0.2); color: #ff4757;">Apagar</button>
+        <button onclick="closeActionSheet()" class="sheet-btn" style="background: #222;">Cancelar</button>
     </div>
 </div>
 
-<div id="image-modal" onclick="closeFullscreen()"><img id="full-image" src=""></div>
-
-<div class="universe">
-    <div class="real-moon"></div>
-    <div id="stars" class="star-field"></div>
-</div>
+<div class="universe"><div class="real-moon"></div><div id="stars"></div></div>
 
 <div class="app-container">
     <div id="login-screen" class="screen screen-active">
-        <div class="glass-box" style="margin-top: 20vh;">
+        <div style="margin-top: 20vh; background: rgba(0,0,0,0.5); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1);">
             <h1 style="text-align: center; margin-bottom: 20px;">Elite Chat</h1>
             <input type="email" id="loginEmail" placeholder="E-mail">
             <input type="password" id="loginPass" placeholder="Senha">
-            <button id="btnEntrar">Conectar-se</button>
-            <button id="btnIrReg" style="background:none; color: var(--accent); margin-top: 10px; font-size:14px;">Criar nova conta</button>
+            <button id="btnEntrar" style="width:100%;">Conectar-se</button>
+            <button id="btnIrReg" style="background:none; width:100%; margin-top: 15px;">Criar nova conta</button>
         </div>
     </div>
 
     <div id="register-screen" class="screen">
-        <div class="glass-box">
-            <h2 style="margin-bottom:20px;">Nova Identidade</h2>
-            <input type="text" id="regNome" placeholder="Seu apelido">
-            <input type="email" id="regEmail" placeholder="E-mail">
-            <input type="password" id="regPass" placeholder="Senha">
-            <button id="btnConfirmarReg">Começar Jornada</button>
-            <button id="btnVoltarLogin" style="background:none; margin-top:10px;">Voltar</button>
+        <h2 style="margin-bottom:20px;">Nova Identidade</h2>
+        <div class="pfp-container" onclick="document.getElementById('regPfpInput').click()">
+            <img id="regPfpPreview" src="https://via.placeholder.com/150" class="pfp-main">
+            <div class="pfp-edit-badge">📷</div>
         </div>
+        <input type="file" id="regPfpInput" hidden accept="image/*">
+        <input type="text" id="regNome" placeholder="Seu apelido">
+        <input type="email" id="regEmail" placeholder="E-mail">
+        <input type="password" id="regPass" placeholder="Senha">
+        <button id="btnConfirmarReg">Começar Jornada</button>
     </div>
 
     <div id="home-screen" class="screen">
@@ -133,14 +112,19 @@
     </div>
 
     <div id="profile-screen" class="screen">
+        <div class="pfp-container" onclick="document.getElementById('editPfpInput').click()">
+            <img id="profImg" src="https://via.placeholder.com/150" class="pfp-main">
+            <div class="pfp-edit-badge">📷</div>
+        </div>
+        <input type="file" id="editPfpInput" hidden accept="image/*">
         <h2 id="profNome" style="text-align:center;">Perfil</h2>
         <p id="profTag" style="text-align:center; color: var(--primary);">#0000</p>
-        <textarea id="profBio" rows="4" style="margin-top:20px;"></textarea>
-        <button id="btnSalvarPerfil">Salvar</button>
+        <textarea id="profBio" rows="4" style="margin-top:20px;" placeholder="Sua bio..."></textarea>
+        <button id="btnSalvarPerfil">Salvar Alterações</button>
         <button id="btnSair" style="background:rgba(255,0,0,0.1); color:#ff4757; margin-top:10px;">Sair</button>
     </div>
 
-    <div id="chat-screen" class="screen" style="background: #000; z-index: 5000; padding-bottom: 90px;">
+    <div id="chat-screen" class="screen" style="background: #000; padding-bottom: 90px;">
         <div style="display:flex; align-items:center; gap:15px; padding-bottom:10px; border-bottom:1px solid #111;">
             <button id="btnVoltarChat" style="background:none; width:auto; font-size:24px;">←</button>
             <strong id="chat-title">Global Elite</strong>
@@ -180,33 +164,7 @@
 
     let editMsgId = null;
     let selectedMsgData = null;
-
-    // --- ANIMAÇÃO DE MENU (ACTION SHEET) ---
-    window.openActionSheet = (id, data) => {
-        selectedMsgData = { id, ...data };
-        document.getElementById('action-sheet-overlay').classList.add('open');
-        // Esconde botão de editar se for mídia
-        document.getElementById('sheetEditBtn').style.display = data.media ? 'none' : 'block';
-    };
-
-    window.closeActionSheet = () => {
-        document.getElementById('action-sheet-overlay').classList.remove('open');
-    };
-
-    document.getElementById('sheetEditBtn').onclick = () => {
-        editMsgId = selectedMsgData.id;
-        document.getElementById('msgInput').value = selectedMsgData.texto;
-        document.getElementById('chat-title').innerText = "Editando...";
-        closeActionSheet();
-        document.getElementById('msgInput').focus();
-    };
-
-    document.getElementById('sheetDeleteBtn').onclick = async () => {
-        if(confirm("Deseja apagar esta mensagem permanentemente?")) {
-            await deleteDoc(doc(db, "mensagens", selectedMsgData.id));
-            closeActionSheet();
-        }
-    };
+    let userPfpBase64 = "";
 
     // --- UTILS ---
     function showScreen(id) {
@@ -217,24 +175,29 @@
         else nav.classList.remove('hidden');
     }
 
-    window.openFullscreen = (src) => {
-        const m = document.getElementById('image-modal');
-        document.getElementById('full-image').src = src;
-        m.classList.add('open');
+    // --- MANIPULAÇÃO DE IMAGENS (FOTO PERFIL) ---
+    const handlePfp = (input, previewId) => {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById(previewId).src = e.target.result;
+                userPfpBase64 = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     };
-    window.closeFullscreen = () => document.getElementById('image-modal').classList.remove('open');
 
-    function formatTime(date) {
-        if (!date) return "";
-        const d = date.toDate ? date.toDate() : new Date(date);
-        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
+    document.getElementById('regPfpInput').onchange = (e) => handlePfp(e.target, 'regPfpPreview');
+    document.getElementById('editPfpInput').onchange = (e) => handlePfp(e.target, 'profImg');
 
-    // --- LOGICA CHAT ---
-    onAuthStateChanged(auth, (user) => {
-        if (user) { showScreen('home-screen'); loadUserData(user.uid); }
-        else showScreen('login-screen');
-    });
+    // --- CHAT LOGIC ---
+    window.openActionSheet = (id, data) => {
+        selectedMsgData = { id, ...data };
+        document.getElementById('action-sheet-overlay').classList.add('open');
+        document.getElementById('sheetEditBtn').style.display = data.media ? 'none' : 'block';
+    };
+    window.closeActionSheet = () => document.getElementById('action-sheet-overlay').classList.remove('open');
 
     function loadChat() {
         const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
@@ -247,75 +210,116 @@
                 div.className = "msg-bubble";
                 div.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
                 div.style.background = isMe ? 'var(--primary)' : '#222';
-                div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.margin = '5px 0'; div.style.maxWidth = '85%';
-                
+                div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.maxWidth = '85%';
+                div.style.display = 'flex'; div.style.flexDirection = 'column';
+
                 if(isMe) div.onclick = () => openActionSheet(d.id, data);
 
-                let html = `<small style="font-size:10px; opacity:0.5; font-weight:700;">${data.usuario}</small><br>`;
+                let content = `<div style="display:flex; align-items:center;">
+                    ${data.pfp ? `<img src="${data.pfp}" class="user-pfp-chat">` : ''}
+                    <small style="font-size:10px; opacity:0.5; font-weight:700;">${data.usuario}</small>
+                </div>`;
+
                 if(data.media) {
-                    html += data.tipo === 'video' ? `<video src="${data.media}" class="chat-video" controls></video>` : `<img src="${data.media}" class="chat-img" onclick="event.stopPropagation(); openFullscreen(this.src)">`;
+                    if(data.tipo === 'video') {
+                        content += `<video src="${data.media}" class="chat-video" controls playsinline></video>`;
+                    } else {
+                        content += `<img src="${data.media}" class="chat-img">`;
+                    }
                 } else {
-                    html += `<span>${data.texto}</span>`;
+                    content += `<span style="margin-top:5px;">${data.texto}</span>`;
                 }
-                html += `<span class="msg-time">${formatTime(data.createdAt)}</span>`;
-                div.innerHTML = html;
+                
+                content += `<span class="msg-time">${data.createdAt ? new Date(data.createdAt.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : ''}</span>`;
+                div.innerHTML = content;
                 area.appendChild(div);
             });
             area.scrollTop = area.scrollHeight;
         });
     }
 
+    // --- SISTEMA DE LOGIN/REGISTRO ---
+    document.getElementById('btnConfirmarReg').onclick = async () => {
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        const nome = document.getElementById('regNome').value;
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(res.user, { displayName: nome });
+            await setDoc(doc(db, "usuarios", res.user.uid), { 
+                nome, pfp: userPfpBase64, bio: "", tag: Math.floor(1000 + Math.random() * 9000) 
+            });
+        } catch (e) { alert("Erro ao criar conta."); }
+    };
+
+    document.getElementById('btnEntrar').onclick = () => {
+        signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
+    };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) { 
+            showScreen('home-screen'); 
+            const d = await getDoc(doc(db, "usuarios", user.uid));
+            if(d.exists()) {
+                const data = d.data();
+                document.getElementById('profNome').innerText = data.nome;
+                document.getElementById('profTag').innerText = "#" + data.tag;
+                document.getElementById('profBio').value = data.bio || "";
+                if(data.pfp) {
+                    document.getElementById('profImg').src = data.pfp;
+                    userPfpBase64 = data.pfp;
+                }
+            }
+        } else showScreen('login-screen');
+    });
+
+    // --- ENVIAR MENSAGEM ---
     document.getElementById('btnEnviar').onclick = async () => {
         const input = document.getElementById('msgInput');
         if(!input.value.trim()) return;
-        if(editMsgId) {
-            await updateDoc(doc(db, "mensagens", editMsgId), { texto: input.value });
-            editMsgId = null;
-            document.getElementById('chat-title').innerText = "Global Elite";
-        } else {
-            await addDoc(collection(db, "mensagens"), {
-                texto: input.value, usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
-            });
-        }
+        await addDoc(collection(db, "mensagens"), {
+            texto: input.value, 
+            usuario: auth.currentUser.displayName, 
+            uid: auth.currentUser.uid, 
+            pfp: userPfpBase64,
+            createdAt: serverTimestamp()
+        });
         input.value = "";
     };
 
-    // Mídia
     document.getElementById('chatMediaInput').onchange = (e) => {
         const file = e.target.files[0];
         if(!file) return;
         const reader = new FileReader();
         reader.onload = async () => {
             await addDoc(collection(db, "mensagens"), {
-                media: reader.result, tipo: file.type.split('/')[0],
-                usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
+                media: reader.result, 
+                tipo: file.type.split('/')[0],
+                usuario: auth.currentUser.displayName, 
+                uid: auth.currentUser.uid, 
+                pfp: userPfpBase64,
+                createdAt: serverTimestamp()
             });
         };
         reader.readAsDataURL(file);
     };
 
-    // Navegação e Outros
+    // Navegação
+    document.getElementById('btnSalvarPerfil').onclick = async () => {
+        await updateDoc(doc(db, "usuarios", auth.currentUser.uid), { 
+            bio: document.getElementById('profBio').value, 
+            pfp: userPfpBase64 
+        });
+        alert("Perfil Atualizado!");
+    };
     document.getElementById('cardGlobal').onclick = () => { showScreen('chat-screen'); loadChat(); };
     document.getElementById('nav-home').onclick = () => showScreen('home-screen');
     document.getElementById('nav-profile').onclick = () => showScreen('profile-screen');
     document.getElementById('btnVoltarChat').onclick = () => showScreen('home-screen');
     document.getElementById('btnSair').onclick = () => signOut(auth);
-    document.getElementById('btnEntrar').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
     document.getElementById('btnIrReg').onclick = () => showScreen('register-screen');
-    document.getElementById('btnConfirmarReg').onclick = async () => {
-        const res = await createUserWithEmailAndPassword(auth, document.getElementById('regEmail').value, document.getElementById('regPass').value);
-        await setDoc(doc(db, "usuarios", res.user.uid), { nome: document.getElementById('regNome').value, tag: Math.floor(1000+Math.random()*9000) });
-        await updateProfile(res.user, { displayName: document.getElementById('regNome').value });
-    };
 
-    async function loadUserData(uid) {
-        const d = await getDoc(doc(db, "usuarios", uid));
-        if(d.exists()) {
-            document.getElementById('profNome').innerText = d.data().nome;
-            document.getElementById('profTag').innerText = "#" + d.data().tag;
-        }
-    }
-
+    // Estrelas
     const stars = document.getElementById('stars');
     for(let i=0; i<70; i++) {
         const s = document.createElement('div');
