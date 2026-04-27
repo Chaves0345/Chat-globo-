@@ -2,113 +2,167 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>ChatApp Pro | Ultra Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChatApp Elite | Cinematic Night</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #007bff; --accent: #00d4ff; --bg-dark: #05050a; 
-            --card-bg: rgba(20, 20, 35, 0.8); --text-main: #ffffff; 
-            --text-dim: #a0a0b8; --glass: rgba(255, 255, 255, 0.05);
+            --primary: #007bff; --accent: #00d4ff; --bg-dark: #010103; 
+            --glass: rgba(255, 255, 255, 0.05); --text-main: #ffffff; 
+            --success: #2ed573; --error: #ff4757;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { 
-            height: 100vh; display: flex; justify-content: center; align-items: center; 
-            background: var(--bg-dark); color: var(--text-main); overflow: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #101025 0%, #05050a 100%);
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body, html { height: 100%; width: 100%; background: var(--bg-dark); color: var(--text-main); overflow: hidden; position: fixed; }
+
+        /* --- CENÁRIO CINEMATOGRÁFICO --- */
+        .universe { position: fixed; inset: 0; z-index: 0; background: radial-gradient(circle at 50% 100%, #0a0a20 0%, #010103 100%); overflow: hidden; }
+        .real-moon {
+            position: absolute; top: -50px; left: 50%; transform: translateX(-50%);
+            width: 300px; height: 300px;
+            background: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
+            background-size: cover; border-radius: 50%;
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.1), inset 20px -20px 50px rgba(0,0,0,0.8);
+            opacity: 0.8; filter: brightness(0.9); animation: moonRotate 200s linear infinite;
         }
-        .orb {
-            position: absolute; width: 300px; height: 300px; border-radius: 50%;
-            background: var(--primary); filter: blur(100px); opacity: 0.15;
-            animation: move 20s infinite alternate; z-index: 1;
+        @keyframes moonRotate { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
+        .star-field { position: absolute; inset: 0; pointer-events: none; }
+
+        /* --- NOTIFICAÇÕES --- */
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 85%; pointer-events: none; }
+        .toast {
+            background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(10px); padding: 16px; border-radius: 18px; 
+            margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); text-align: center; font-weight: 600;
+            animation: slideDown 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
         }
-        @keyframes move { from { transform: translate(-100px, -100px); } to { transform: translate(100px, 100px); } }
-        
-        .app { 
-            width: 400px; height: 820px; border-radius: 45px; background: var(--card-bg); 
-            backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.1); 
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8); z-index: 10;
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- TELAS --- */
+        .app-container { position: relative; z-index: 10; height: 100%; width: 100%; }
+        .screen { 
+            position: absolute; inset: 0; padding: 25px; transition: 0.4s ease;
+            display: flex; flex-direction: column; visibility: hidden; opacity: 0; overflow-y: auto;
         }
-        .screen { flex: 1; display: flex; flex-direction: column; padding: 30px; animation: fadeIn 0.4s ease; }
+        .screen-active { visibility: visible; opacity: 1; transform: translateX(0); }
+        .screen-hidden-right { transform: translateX(100%); opacity: 0; }
+
+        .glass-box { background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); width: 100%; }
+
+        input, textarea { width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
+        button { border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 16px; border-radius: 18px; color: white; font-weight: 700; cursor: pointer; }
+
+        /* --- ADD AMIGO ANIMADO --- */
+        #friend-modal {
+            position: fixed; top: -100%; left: 0; width: 100%; background: #0a0a15; padding: 30px;
+            border-bottom: 2px solid var(--primary); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000;
+        }
+        #friend-modal.open { top: 0; box-shadow: 0 10px 50px rgba(0,123,255,0.3); }
+
+        /* Navbar Inferior */
+        .nav-bar { 
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(2,2,5,0.98); 
+            display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; z-index: 1000;
+        }
+        .nav-btn { font-size: 24px; opacity: 0.3; transition: 0.3s; }
+        .nav-btn.active { opacity: 1; color: var(--primary); }
         .hidden { display: none !important; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
 
-        input { 
-            width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); 
-            padding: 18px; border-radius: 20px; color: white; margin-bottom: 12px; outline: none; 
-        }
-        button { 
-            border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); 
-            padding: 18px; border-radius: 20px; color: white; font-weight: 700; cursor: pointer; transition: 0.3s; 
-        }
-        button:active { transform: scale(0.95); }
-        .secondary { background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-top: 10px; }
-
-        /* Chat UI */
-        #chat-screen { position: absolute; inset: 0; background: #080812; z-index: 20; display: flex; flex-direction: column; }
-        .messages-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .msg { padding: 14px 18px; border-radius: 22px; max-width: 85%; font-size: 14px; animation: messageSlide 0.3s ease-out; }
-        @keyframes messageSlide { from { opacity: 0; transform: scale(0.9); } }
-        .msg.me { align-self: flex-end; background: linear-gradient(135deg, #0052d4, #4364f7); border-bottom-right-radius: 4px; }
-        .msg.other { align-self: flex-start; background: #1c1c30; border-bottom-left-radius: 4px; }
-        .msg small { display: block; font-size: 10px; margin-bottom: 5px; font-weight: 600; opacity: 0.7; }
-        .chat-input-area { padding: 20px; display: flex; gap: 10px; background: rgba(10,10,20,0.9); }
+        /* Foto de Perfil Upload */
+        .pfp-upload { width: 100px; height: 100px; border-radius: 50%; background: var(--glass); margin: 0 auto 15px; border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+        .pfp-upload img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
 
-<div class="orb"></div>
-
-<div class="app">
-    <div id="login-screen" class="screen">
-        <div style="font-size: 60px; text-align: center; margin: 60px 0 20px;">💎</div>
-        <h1 style="text-align:center;">Bem-vindo</h1>
-        <p style="text-align:center; color:var(--text-dim); margin-bottom:40px;">Acesse sua conta</p>
-        <input type="email" id="loginEmail" placeholder="E-mail">
-        <input type="password" id="loginPass" placeholder="Senha">
-        <button id="btnEntrar">Entrar</button>
-        <button id="btnIrParaRegistro" class="secondary">Criar Conta Nova</button>
+<div id="toast-container"></div>
+<div id="friend-modal">
+    <h3 style="margin-bottom:15px;">Adicionar por #ID</h3>
+    <input type="number" id="friendIdInput" placeholder="Ex: 4829">
+    <div style="display:flex; gap:10px;">
+        <button id="btnSearchFriend">Buscar Amigo</button>
+        <button onclick="closeFriendModal()" style="background:none; border:1px solid #333;">Fechar</button>
     </div>
+</div>
 
-    <div id="register-screen" class="screen hidden">
-        <div style="font-size: 50px; text-align: center; margin: 40px 0 20px;">📝</div>
-        <h1 style="text-align:center;">Nova Conta</h1>
-        <p style="text-align:center; color:var(--text-dim); margin-bottom:30px;">Preencha seus dados</p>
-        <input type="text" id="regNome" placeholder="Seu Nome (como aparecerá no chat)">
-        <input type="email" id="regEmail" placeholder="Seu melhor e-mail">
-        <input type="password" id="regPass" placeholder="Senha (mínimo 6 dígitos)">
-        <button id="btnConfirmarRegistro">Cadastrar e Entrar</button>
-        <button id="btnVoltarLogin" class="secondary">Já tenho conta</button>
-    </div>
+<div class="universe">
+    <div class="real-moon"></div>
+    <div id="stars" class="star-field"></div>
+</div>
 
-    <div id="home-screen" class="screen hidden">
-        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <h2 id="welcome-user">Olá!</h2>
-            <button id="btnSair" style="background:#ff4757; padding: 10px 15px; border-radius: 15px; font-size: 12px;">Sair</button>
-        </div>
-        <div id="cardPublico" style="background: rgba(0,123,255,0.1); padding: 30px; border-radius: 30px; cursor: pointer; border: 1px solid var(--primary);">
-            <strong>💬 Chat Global</strong>
-            <p style="font-size: 13px; color: var(--text-dim); margin-top: 10px;">Clique aqui para entrar na conversa em tempo real.</p>
+<div class="app-container">
+    <div id="login-screen" class="screen screen-active" style="background:transparent; justify-content:center;">
+        <div class="glass-box">
+            <h1 style="text-align: center; margin-bottom: 20px;">Elite Chat</h1>
+            <input type="email" id="loginEmail" placeholder="E-mail">
+            <input type="password" id="loginPass" placeholder="Senha">
+            <button id="btnEntrar">Conectar-se</button>
+            <button id="btnIrReg" style="background:none; color: var(--accent); margin-top: 10px; font-size:14px;">Criar nova conta</button>
         </div>
     </div>
 
-    <div id="chat-screen" class="hidden">
-        <div style="padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-            <button id="btnVoltar" style="background:none; color:white; font-size: 20px;">←</button>
-            <strong>Chat Global</strong>
+    <div id="register-screen" class="screen screen-hidden-right" style="padding-top:50px;">
+        <div class="glass-box">
+            <h2 style="margin-bottom:20px;">Nova Identidade</h2>
+            <div class="pfp-upload" onclick="document.getElementById('regPfpInput').click()">
+                <span id="pfpPlaceholder">📷</span>
+                <img id="regPfpPreview" src="" class="hidden">
+            </div>
+            <input type="file" id="regPfpInput" hidden accept="image/*">
+            
+            <input type="text" id="regNome" placeholder="Seu apelido">
+            <textarea id="regBio" placeholder="Escreva algo sobre você (Bio)..." rows="2"></textarea>
+            <input type="email" id="regEmail" placeholder="E-mail">
+            <input type="password" id="regPass" placeholder="Senha">
+            
+            <button id="btnConfirmarReg">Começar Jornada</button>
+            <button id="btnVoltarLogin" style="background:none; margin-top:10px;">Voltar ao login</button>
         </div>
-        <div class="messages-area" id="chat-msgs"></div>
-        <div class="chat-input-area">
-            <input type="text" id="msgInput" placeholder="Sua mensagem..." style="margin:0">
-            <button id="btnEnviar">➤</button>
+    </div>
+
+    <div id="home-screen" class="screen screen-hidden-right" style="background: var(--bg-dark);">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:25px;">
+            <h1>Conversas</h1>
+            <button id="btnAddAmigo" style="width:auto; padding:10px 15px; border-radius:12px; font-size:13px;">+ Amigo</button>
         </div>
+        <div id="cardGlobal" style="background:linear-gradient(45deg, #050510, #101030); padding:20px; border-radius:20px; border:1px solid var(--primary); cursor:pointer;">
+            <strong>🌍 Chat Global</strong><br><small>Clique para entrar na conversa</small>
+        </div>
+    </div>
+
+    <div id="profile-screen" class="screen screen-hidden-right" style="background: var(--bg-dark);">
+        <div style="position:relative; width:120px; margin:0 auto 15px;" onclick="document.getElementById('editPfpInput').click()">
+            <img src="https://via.placeholder.com/150" id="profImg" style="width:120px; height:120px; border-radius:50%; display:block; border:2px solid var(--primary); object-fit:cover;">
+            <div style="position:absolute; bottom:5px; right:5px; background:var(--primary); padding:5px; border-radius:50%; font-size:10px;">📷</div>
+            <input type="file" id="editPfpInput" hidden accept="image/*">
+        </div>
+        <h2 id="profNome" style="text-align:center;">Nome</h2>
+        <p id="profTag" style="text-align:center; color: var(--primary); margin-bottom:20px;">#0000</p>
+        <textarea id="profBio" rows="4" placeholder="Sua biografia..."></textarea>
+        <button id="btnSalvarPerfil" style="margin-top:15px;">Atualizar Perfil</button>
+        <button id="btnSair" style="background:rgba(255,0,0,0.1); color:#ff4757; margin-top:10px;">Sair</button>
+    </div>
+
+    <div id="chat-screen" class="screen screen-hidden-right" style="background: #000; z-index: 5000;">
+        <div style="display:flex; align-items:center; gap:15px; padding-bottom:10px; border-bottom:1px solid #111;">
+            <button id="btnVoltarChat" style="background:none; width:auto; font-size:24px;">←</button>
+            <strong>Global Elite</strong>
+        </div>
+        <div id="chat-msgs" style="flex:1; overflow-y:auto; padding:15px 0;"></div>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="msgInput" placeholder="Mensagem..." style="margin:0;">
+            <button id="btnEnviar" style="width:60px;">➤</button>
+        </div>
+    </div>
+
+    <div class="nav-bar hidden" id="main-nav">
+        <div class="nav-btn" id="nav-home">💬</div>
+        <div class="nav-btn" id="nav-profile">👤</div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -124,83 +178,160 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // --- NAVEGAÇÃO ENTRE TELAS ---
-    const show = (id) => {
-        document.querySelectorAll('.screen, #chat-screen').forEach(s => s.classList.add('hidden'));
-        document.getElementById(id).classList.remove('hidden');
+    // Toasts e Navegação
+    function notify(text, type = 'success') {
+        const t = document.createElement('div');
+        t.className = `toast`; t.style.color = type === 'success' ? '#2ed573' : '#ff4757';
+        t.innerText = text; document.getElementById('toast-container').appendChild(t);
+        setTimeout(() => t.remove(), 3000);
     }
 
-    document.getElementById('btnIrParaRegistro').onclick = () => show('register-screen');
-    document.getElementById('btnVoltarLogin').onclick = () => show('login-screen');
-    document.getElementById('btnVoltar').onclick = () => show('home-screen');
-    document.getElementById('cardPublico').onclick = () => { show('chat-screen'); carregarMensagens(); };
-
-    // --- MONITOR DE LOGIN ---
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            show('home-screen');
-            document.getElementById('welcome-user').innerText = "Olá, " + (user.displayName || user.email.split('@')[0]);
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => {
+            s.classList.remove('screen-active');
+            s.classList.add('screen-hidden-right');
+        });
+        document.getElementById(id).classList.remove('screen-hidden-right');
+        document.getElementById(id).classList.add('screen-active');
+        
+        const nav = document.getElementById('main-nav');
+        if (id === 'login-screen' || id === 'register-screen') {
+            nav.classList.add('hidden');
         } else {
-            show('login-screen');
+            nav.classList.remove('hidden');
+        }
+
+        document.getElementById('nav-home').classList.toggle('active', id === 'home-screen');
+        document.getElementById('nav-profile').classList.toggle('active', id === 'profile-screen');
+    }
+
+    window.closeFriendModal = () => document.getElementById('friend-modal').classList.remove('open');
+    document.getElementById('btnAddAmigo').onclick = () => document.getElementById('friend-modal').classList.add('open');
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            showScreen('home-screen');
+            loadUserData(user.uid);
+        } else {
+            showScreen('login-screen');
         }
     });
 
-    // --- AÇÃO DE REGISTRO ---
-    document.getElementById('btnConfirmarRegistro').onclick = async () => {
-        const nome = document.getElementById('regNome').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const pass = document.getElementById('regPass').value;
+    // --- CORREÇÃO DA FOTO NO REGISTRO ---
+    let regPhotoData = null;
+    document.getElementById('regPfpInput').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            regPhotoData = reader.result;
+            document.getElementById('regPfpPreview').src = regPhotoData;
+            document.getElementById('regPfpPreview').classList.remove('hidden');
+            document.getElementById('pfpPlaceholder').classList.add('hidden');
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
 
-        if(!nome || !email || pass.length < 6) return alert("Preencha todos os campos corretamente!");
+    document.getElementById('btnConfirmarReg').onclick = async () => {
+        const nome = document.getElementById('regNome').value;
+        const email = document.getElementById('regEmail').value;
+        const pass = document.getElementById('regPass').value;
+        const bio = document.getElementById('regBio').value;
+
+        if(!nome || !email || pass.length < 6) return notify("Preencha tudo corretamente!", "error");
 
         try {
-            const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-            await updateProfile(userCred.user, { displayName: nome });
-            alert("Sucesso! Bem-vindo, " + nome);
-        } catch (e) { alert("Erro ao criar: " + e.message); }
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            const tag = Math.floor(1000 + Math.random() * 9000);
+            
+            // Salva no banco
+            await setDoc(doc(db, "usuarios", res.user.uid), { nome, tag, bio, uid: res.user.uid });
+            await updateProfile(res.user, { displayName: nome });
+            
+            // Vincula a foto permanentemente ao UID
+            if(regPhotoData) {
+                localStorage.setItem('pfp_' + res.user.uid, regPhotoData);
+            }
+            
+            notify("Conta criada com sucesso!");
+        } catch(e) { notify("Erro no cadastro", "error"); }
     };
 
-    // --- AÇÃO DE LOGIN ---
-    document.getElementById('btnEntrar').onclick = async () => {
-        const email = document.getElementById('loginEmail').value.trim();
-        const pass = document.getElementById('loginPass').value;
-        try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert("Erro: " + e.message); }
+    // Alterar foto no Perfil
+    document.getElementById('editPfpInput').onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const data = reader.result;
+            document.getElementById('profImg').src = data;
+            localStorage.setItem('pfp_' + auth.currentUser.uid, data);
+            notify("Foto atualizada!");
+        };
+        reader.readAsDataURL(e.target.files[0]);
     };
 
+    document.getElementById('btnEntrar').onclick = () => {
+        signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value)
+        .catch(() => notify("Acesso negado!", "error"));
+    };
+
+    document.getElementById('btnIrReg').onclick = () => showScreen('register-screen');
+    document.getElementById('btnVoltarLogin').onclick = () => showScreen('login-screen');
+    document.getElementById('nav-home').onclick = () => showScreen('home-screen');
+    document.getElementById('nav-profile').onclick = () => showScreen('profile-screen');
+    document.getElementById('cardGlobal').onclick = () => { showScreen('chat-screen'); loadChat(); };
+    document.getElementById('btnVoltarChat').onclick = () => showScreen('home-screen');
     document.getElementById('btnSair').onclick = () => signOut(auth);
 
-    // --- MENSAGENS ---
-    const enviarMsg = async () => {
-        const input = document.getElementById('msgInput');
-        if (input.value.trim() !== "" && auth.currentUser) {
-            await addDoc(collection(db, "mensagens"), {
-                texto: input.value,
-                usuario: auth.currentUser.displayName || auth.currentUser.email,
-                uid: auth.currentUser.uid,
-                createdAt: serverTimestamp()
-            });
-            input.value = "";
+    async function loadUserData(uid) {
+        const d = await getDoc(doc(db, "usuarios", uid));
+        if(d.exists()) {
+            const data = d.data();
+            document.getElementById('profNome').innerText = data.nome;
+            document.getElementById('profTag').innerText = "#" + data.tag;
+            document.getElementById('profBio').value = data.bio || "";
+            
+            // Carrega a foto salva
+            const saved = localStorage.getItem('pfp_' + uid);
+            if(saved) document.getElementById('profImg').src = saved;
+            else document.getElementById('profImg').src = "https://via.placeholder.com/150";
         }
-    };
-    document.getElementById('btnEnviar').onclick = enviarMsg;
-    document.getElementById('msgInput').onkeypress = (e) => { if(e.key === 'Enter') enviarMsg(); };
+    }
 
-    function carregarMensagens() {
+    // Estrelas
+    const stars = document.getElementById('stars');
+    for(let i=0; i<70; i++) {
+        const s = document.createElement('div');
+        s.style.position = 'absolute'; s.style.background = 'white'; s.style.borderRadius = '50%';
+        const sz = Math.random()*2; s.style.width = sz+'px'; s.style.height = sz+'px';
+        s.style.top = Math.random()*100+'%'; s.style.left = Math.random()*100+'%';
+        stars.appendChild(s);
+    }
+
+    function loadChat() {
         const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
         onSnapshot(q, (snaps) => {
-            const area = document.getElementById('chat-msgs');
-            area.innerHTML = "";
-            snaps.forEach(doc => {
-                const d = doc.data();
-                if(!d.createdAt) return;
+            const area = document.getElementById('chat-msgs'); area.innerHTML = "";
+            snaps.forEach(d => {
+                const data = d.data();
+                const isMe = data.uid === auth.currentUser.uid;
                 const div = document.createElement('div');
-                div.className = d.uid === auth.currentUser.uid ? 'msg me' : 'msg other';
-                div.innerHTML = `<small>${d.usuario}</small>${d.texto}`;
+                div.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
+                div.style.background = isMe ? 'var(--primary)' : '#222';
+                div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.margin = '5px 0'; div.style.maxWidth = '80%';
+                div.innerHTML = `<small style="font-size:10px; opacity:0.5;">${data.usuario}</small><br>${data.texto}`;
                 area.appendChild(div);
             });
             area.scrollTop = area.scrollHeight;
         });
     }
+
+    document.getElementById('btnEnviar').onclick = async () => {
+        const input = document.getElementById('msgInput');
+        if(!input.value) return;
+        await addDoc(collection(db, "mensagens"), {
+            texto: input.value, usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
+        });
+        input.value = "";
+    };
+
 </script>
 </body>
 </html>
