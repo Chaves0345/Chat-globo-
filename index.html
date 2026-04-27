@@ -23,66 +23,80 @@
             background: url('https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg');
             background-size: cover; border-radius: 50%;
             box-shadow: 0 0 80px rgba(255, 255, 255, 0.1), inset 20px -20px 50px rgba(0,0,0,0.8);
-            opacity: 0.8; filter: brightness(0.9); animation: moonRotate 200s linear infinite;
+            opacity: 0.8; filter: brightness(0.9);
+            animation: moonRotate 200s linear infinite;
         }
         @keyframes moonRotate { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
         .star-field { position: absolute; inset: 0; pointer-events: none; }
 
-        /* --- NOTIFICAÇÕES --- */
-        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; width: 85%; pointer-events: none; }
-        .toast {
-            background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(10px); padding: 16px; border-radius: 18px; 
-            margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1); text-align: center; font-weight: 600;
-            animation: slideDown 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
-        }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* --- TELAS --- */
+        /* --- TELAS E ANIMAÇÕES --- */
         .app-container { position: relative; z-index: 10; height: 100%; width: 100%; }
         .screen { 
-            position: absolute; inset: 0; padding: 25px; transition: 0.4s ease;
+            position: absolute; inset: 0; padding: 25px; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex; flex-direction: column; visibility: hidden; opacity: 0; overflow-y: auto;
+            transform: translateY(15px);
         }
-        .screen-active { visibility: visible; opacity: 1; transform: translateX(0); }
-        .screen-hidden-right { transform: translateX(100%); opacity: 0; }
+        .screen-active { visibility: visible; opacity: 1; transform: translateY(0); }
 
-        .glass-box { background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); width: 100%; }
-
-        input, textarea { width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
-        button { border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 16px; border-radius: 18px; color: white; font-weight: 700; cursor: pointer; }
-
-        /* --- ADD AMIGO ANIMADO --- */
-        #friend-modal {
-            position: fixed; top: -100%; left: 0; width: 100%; background: #0a0a15; padding: 30px;
-            border-bottom: 2px solid var(--primary); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000;
-        }
-        #friend-modal.open { top: 0; box-shadow: 0 10px 50px rgba(0,123,255,0.3); }
-
-        /* Navbar Inferior */
+        /* --- NAVBAR --- */
         .nav-bar { 
             position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; background: rgba(2,2,5,0.98); 
             display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #111; z-index: 1000;
         }
-        .nav-btn { font-size: 24px; opacity: 0.3; transition: 0.3s; }
-        .nav-btn.active { opacity: 1; color: var(--primary); }
-        .hidden { display: none !important; }
+        .nav-btn { font-size: 24px; opacity: 0.3; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; }
+        .nav-btn:hover { transform: scale(1.2); }
+        .nav-btn.active { opacity: 1; color: var(--primary); transform: scale(1.1); }
 
-        /* Foto de Perfil Upload */
-        .pfp-upload { width: 100px; height: 100px; border-radius: 50%; background: var(--glass); margin: 0 auto 15px; border: 2px dashed var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
-        .pfp-upload img { width: 100%; height: 100%; object-fit: cover; }
+        /* --- MENSAGENS --- */
+        .msg-bubble { cursor: pointer; transition: 0.3s; position: relative; animation: msgPop 0.3s ease-out; }
+        @keyframes msgPop { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+        .msg-time { font-size: 9px; opacity: 0.4; margin-top: 4px; display: block; text-align: right; }
+        .chat-img, .chat-video { max-width: 100%; border-radius: 12px; margin-top: 8px; display: block; border: 1px solid rgba(255,255,255,0.1); cursor: zoom-in; }
+
+        /* --- NOVO: MODAL DE OPÇÕES ANIMADO (Substitui o confirm) --- */
+        #action-sheet-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            z-index: 11000; display: none; align-items: flex-end; justify-content: center;
+        }
+        #action-sheet {
+            width: 100%; max-width: 500px; background: #0a0a15; border-radius: 25px 25px 0 0;
+            padding: 20px; border: 1px solid rgba(255,255,255,0.1);
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #action-sheet-overlay.open { display: flex; }
+        #action-sheet-overlay.open #action-sheet { transform: translateY(0); }
+        .sheet-btn {
+            width: 100%; padding: 18px; margin-bottom: 10px; border-radius: 15px; border: none;
+            color: white; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.2s;
+        }
+        .btn-edit { background: var(--primary); }
+        .btn-delete { background: rgba(255,71,87,0.2); color: #ff4757; }
+        .btn-cancel { background: #222; }
+
+        /* Fullscreen Image */
+        #image-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.4s; }
+        #image-modal.open { display: flex; opacity: 1; }
+        #full-image { max-width: 95%; max-height: 90%; border-radius: 10px; }
+
+        /* Estilos Gerais */
+        .glass-box { background: rgba(0,0,0,0.5); backdrop-filter: blur(15px); padding: 25px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); width: 100%; }
+        input, textarea { width: 100%; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 18px; color: white; margin-bottom: 12px; outline: none; }
+        button { border: none; background: linear-gradient(135deg, var(--primary), var(--accent)); padding: 16px; border-radius: 18px; color: white; font-weight: 700; cursor: pointer; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<div id="toast-container"></div>
-<div id="friend-modal">
-    <h3 style="margin-bottom:15px;">Adicionar por #ID</h3>
-    <input type="number" id="friendIdInput" placeholder="Ex: 4829">
-    <div style="display:flex; gap:10px;">
-        <button id="btnSearchFriend">Buscar Amigo</button>
-        <button onclick="closeFriendModal()" style="background:none; border:1px solid #333;">Fechar</button>
+<div id="action-sheet-overlay" onclick="closeActionSheet()">
+    <div id="action-sheet" onclick="event.stopPropagation()">
+        <h4 style="text-align: center; margin-bottom: 20px; opacity: 0.7;">Opções da Mensagem</h4>
+        <button id="sheetEditBtn" class="sheet-btn btn-edit">Editar Mensagem</button>
+        <button id="sheetDeleteBtn" class="sheet-btn btn-delete">Apagar Mensagem</button>
+        <button onclick="closeActionSheet()" class="sheet-btn btn-cancel">Cancelar</button>
     </div>
 </div>
+
+<div id="image-modal" onclick="closeFullscreen()"><img id="full-image" src=""></div>
 
 <div class="universe">
     <div class="real-moon"></div>
@@ -90,8 +104,8 @@
 </div>
 
 <div class="app-container">
-    <div id="login-screen" class="screen screen-active" style="background:transparent; justify-content:center;">
-        <div class="glass-box">
+    <div id="login-screen" class="screen screen-active">
+        <div class="glass-box" style="margin-top: 20vh;">
             <h1 style="text-align: center; margin-bottom: 20px;">Elite Chat</h1>
             <input type="email" id="loginEmail" placeholder="E-mail">
             <input type="password" id="loginPass" placeholder="Senha">
@@ -100,69 +114,55 @@
         </div>
     </div>
 
-    <div id="register-screen" class="screen screen-hidden-right" style="padding-top:50px;">
+    <div id="register-screen" class="screen">
         <div class="glass-box">
             <h2 style="margin-bottom:20px;">Nova Identidade</h2>
-            <div class="pfp-upload" onclick="document.getElementById('regPfpInput').click()">
-                <span id="pfpPlaceholder">📷</span>
-                <img id="regPfpPreview" src="" class="hidden">
-            </div>
-            <input type="file" id="regPfpInput" hidden accept="image/*">
-            
             <input type="text" id="regNome" placeholder="Seu apelido">
-            <textarea id="regBio" placeholder="Escreva algo sobre você (Bio)..." rows="2"></textarea>
             <input type="email" id="regEmail" placeholder="E-mail">
             <input type="password" id="regPass" placeholder="Senha">
-            
             <button id="btnConfirmarReg">Começar Jornada</button>
-            <button id="btnVoltarLogin" style="background:none; margin-top:10px;">Voltar ao login</button>
+            <button id="btnVoltarLogin" style="background:none; margin-top:10px;">Voltar</button>
         </div>
     </div>
 
-    <div id="home-screen" class="screen screen-hidden-right" style="background: var(--bg-dark);">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:25px;">
-            <h1>Conversas</h1>
-            <button id="btnAddAmigo" style="width:auto; padding:10px 15px; border-radius:12px; font-size:13px;">+ Amigo</button>
-        </div>
+    <div id="home-screen" class="screen">
+        <h1>Conversas</h1><br>
         <div id="cardGlobal" style="background:linear-gradient(45deg, #050510, #101030); padding:20px; border-radius:20px; border:1px solid var(--primary); cursor:pointer;">
-            <strong>🌍 Chat Global</strong><br><small>Clique para entrar na conversa</small>
+            <strong>🌍 Chat Global</strong><br><small>Toque para entrar</small>
         </div>
     </div>
 
-    <div id="profile-screen" class="screen screen-hidden-right" style="background: var(--bg-dark);">
-        <div style="position:relative; width:120px; margin:0 auto 15px;" onclick="document.getElementById('editPfpInput').click()">
-            <img src="https://via.placeholder.com/150" id="profImg" style="width:120px; height:120px; border-radius:50%; display:block; border:2px solid var(--primary); object-fit:cover;">
-            <div style="position:absolute; bottom:5px; right:5px; background:var(--primary); padding:5px; border-radius:50%; font-size:10px;">📷</div>
-            <input type="file" id="editPfpInput" hidden accept="image/*">
-        </div>
-        <h2 id="profNome" style="text-align:center;">Nome</h2>
-        <p id="profTag" style="text-align:center; color: var(--primary); margin-bottom:20px;">#0000</p>
-        <textarea id="profBio" rows="4" placeholder="Sua biografia..."></textarea>
-        <button id="btnSalvarPerfil" style="margin-top:15px;">Atualizar Perfil</button>
+    <div id="profile-screen" class="screen">
+        <h2 id="profNome" style="text-align:center;">Perfil</h2>
+        <p id="profTag" style="text-align:center; color: var(--primary);">#0000</p>
+        <textarea id="profBio" rows="4" style="margin-top:20px;"></textarea>
+        <button id="btnSalvarPerfil">Salvar</button>
         <button id="btnSair" style="background:rgba(255,0,0,0.1); color:#ff4757; margin-top:10px;">Sair</button>
     </div>
 
-    <div id="chat-screen" class="screen screen-hidden-right" style="background: #000; z-index: 5000;">
+    <div id="chat-screen" class="screen" style="background: #000; z-index: 5000; padding-bottom: 90px;">
         <div style="display:flex; align-items:center; gap:15px; padding-bottom:10px; border-bottom:1px solid #111;">
             <button id="btnVoltarChat" style="background:none; width:auto; font-size:24px;">←</button>
-            <strong>Global Elite</strong>
+            <strong id="chat-title">Global Elite</strong>
         </div>
-        <div id="chat-msgs" style="flex:1; overflow-y:auto; padding:15px 0;"></div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="msgInput" placeholder="Mensagem..." style="margin:0;">
+        <div id="chat-msgs" style="flex:1; overflow-y:auto; padding:15px 0; display:flex; flex-direction:column;"></div>
+        <div style="display:flex; gap:10px; align-items: center; padding-top:10px;">
+            <button onclick="document.getElementById('chatMediaInput').click()" style="background:var(--glass); width:50px;">📎</button>
+            <input type="file" id="chatMediaInput" hidden accept="image/*,video/*">
+            <input type="text" id="msgInput" placeholder="Mensagem..." style="margin:0; flex:1;">
             <button id="btnEnviar" style="width:60px;">➤</button>
         </div>
     </div>
 
     <div class="nav-bar hidden" id="main-nav">
-        <div class="nav-btn" id="nav-home">💬</div>
+        <div class="nav-btn active" id="nav-home">💬</div>
         <div class="nav-btn" id="nav-profile">👤</div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -178,132 +178,63 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Toasts e Navegação
-    function notify(text, type = 'success') {
-        const t = document.createElement('div');
-        t.className = `toast`; t.style.color = type === 'success' ? '#2ed573' : '#ff4757';
-        t.innerText = text; document.getElementById('toast-container').appendChild(t);
-        setTimeout(() => t.remove(), 3000);
-    }
+    let editMsgId = null;
+    let selectedMsgData = null;
 
+    // --- ANIMAÇÃO DE MENU (ACTION SHEET) ---
+    window.openActionSheet = (id, data) => {
+        selectedMsgData = { id, ...data };
+        document.getElementById('action-sheet-overlay').classList.add('open');
+        // Esconde botão de editar se for mídia
+        document.getElementById('sheetEditBtn').style.display = data.media ? 'none' : 'block';
+    };
+
+    window.closeActionSheet = () => {
+        document.getElementById('action-sheet-overlay').classList.remove('open');
+    };
+
+    document.getElementById('sheetEditBtn').onclick = () => {
+        editMsgId = selectedMsgData.id;
+        document.getElementById('msgInput').value = selectedMsgData.texto;
+        document.getElementById('chat-title').innerText = "Editando...";
+        closeActionSheet();
+        document.getElementById('msgInput').focus();
+    };
+
+    document.getElementById('sheetDeleteBtn').onclick = async () => {
+        if(confirm("Deseja apagar esta mensagem permanentemente?")) {
+            await deleteDoc(doc(db, "mensagens", selectedMsgData.id));
+            closeActionSheet();
+        }
+    };
+
+    // --- UTILS ---
     function showScreen(id) {
-        document.querySelectorAll('.screen').forEach(s => {
-            s.classList.remove('screen-active');
-            s.classList.add('screen-hidden-right');
-        });
-        document.getElementById(id).classList.remove('screen-hidden-right');
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('screen-active'));
         document.getElementById(id).classList.add('screen-active');
-        
         const nav = document.getElementById('main-nav');
-        if (id === 'login-screen' || id === 'register-screen') {
-            nav.classList.add('hidden');
-        } else {
-            nav.classList.remove('hidden');
-        }
-
-        document.getElementById('nav-home').classList.toggle('active', id === 'home-screen');
-        document.getElementById('nav-profile').classList.toggle('active', id === 'profile-screen');
+        if (id === 'login-screen' || id === 'register-screen') nav.classList.add('hidden');
+        else nav.classList.remove('hidden');
     }
 
-    window.closeFriendModal = () => document.getElementById('friend-modal').classList.remove('open');
-    document.getElementById('btnAddAmigo').onclick = () => document.getElementById('friend-modal').classList.add('open');
+    window.openFullscreen = (src) => {
+        const m = document.getElementById('image-modal');
+        document.getElementById('full-image').src = src;
+        m.classList.add('open');
+    };
+    window.closeFullscreen = () => document.getElementById('image-modal').classList.remove('open');
 
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            showScreen('home-screen');
-            loadUserData(user.uid);
-        } else {
-            showScreen('login-screen');
-        }
+    function formatTime(date) {
+        if (!date) return "";
+        const d = date.toDate ? date.toDate() : new Date(date);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // --- LOGICA CHAT ---
+    onAuthStateChanged(auth, (user) => {
+        if (user) { showScreen('home-screen'); loadUserData(user.uid); }
+        else showScreen('login-screen');
     });
-
-    // --- CORREÇÃO DA FOTO NO REGISTRO ---
-    let regPhotoData = null;
-    document.getElementById('regPfpInput').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            regPhotoData = reader.result;
-            document.getElementById('regPfpPreview').src = regPhotoData;
-            document.getElementById('regPfpPreview').classList.remove('hidden');
-            document.getElementById('pfpPlaceholder').classList.add('hidden');
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    document.getElementById('btnConfirmarReg').onclick = async () => {
-        const nome = document.getElementById('regNome').value;
-        const email = document.getElementById('regEmail').value;
-        const pass = document.getElementById('regPass').value;
-        const bio = document.getElementById('regBio').value;
-
-        if(!nome || !email || pass.length < 6) return notify("Preencha tudo corretamente!", "error");
-
-        try {
-            const res = await createUserWithEmailAndPassword(auth, email, pass);
-            const tag = Math.floor(1000 + Math.random() * 9000);
-            
-            // Salva no banco
-            await setDoc(doc(db, "usuarios", res.user.uid), { nome, tag, bio, uid: res.user.uid });
-            await updateProfile(res.user, { displayName: nome });
-            
-            // Vincula a foto permanentemente ao UID
-            if(regPhotoData) {
-                localStorage.setItem('pfp_' + res.user.uid, regPhotoData);
-            }
-            
-            notify("Conta criada com sucesso!");
-        } catch(e) { notify("Erro no cadastro", "error"); }
-    };
-
-    // Alterar foto no Perfil
-    document.getElementById('editPfpInput').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const data = reader.result;
-            document.getElementById('profImg').src = data;
-            localStorage.setItem('pfp_' + auth.currentUser.uid, data);
-            notify("Foto atualizada!");
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    document.getElementById('btnEntrar').onclick = () => {
-        signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value)
-        .catch(() => notify("Acesso negado!", "error"));
-    };
-
-    document.getElementById('btnIrReg').onclick = () => showScreen('register-screen');
-    document.getElementById('btnVoltarLogin').onclick = () => showScreen('login-screen');
-    document.getElementById('nav-home').onclick = () => showScreen('home-screen');
-    document.getElementById('nav-profile').onclick = () => showScreen('profile-screen');
-    document.getElementById('cardGlobal').onclick = () => { showScreen('chat-screen'); loadChat(); };
-    document.getElementById('btnVoltarChat').onclick = () => showScreen('home-screen');
-    document.getElementById('btnSair').onclick = () => signOut(auth);
-
-    async function loadUserData(uid) {
-        const d = await getDoc(doc(db, "usuarios", uid));
-        if(d.exists()) {
-            const data = d.data();
-            document.getElementById('profNome').innerText = data.nome;
-            document.getElementById('profTag').innerText = "#" + data.tag;
-            document.getElementById('profBio').value = data.bio || "";
-            
-            // Carrega a foto salva
-            const saved = localStorage.getItem('pfp_' + uid);
-            if(saved) document.getElementById('profImg').src = saved;
-            else document.getElementById('profImg').src = "https://via.placeholder.com/150";
-        }
-    }
-
-    // Estrelas
-    const stars = document.getElementById('stars');
-    for(let i=0; i<70; i++) {
-        const s = document.createElement('div');
-        s.style.position = 'absolute'; s.style.background = 'white'; s.style.borderRadius = '50%';
-        const sz = Math.random()*2; s.style.width = sz+'px'; s.style.height = sz+'px';
-        s.style.top = Math.random()*100+'%'; s.style.left = Math.random()*100+'%';
-        stars.appendChild(s);
-    }
 
     function loadChat() {
         const q = query(collection(db, "mensagens"), orderBy("createdAt", "asc"));
@@ -313,10 +244,21 @@
                 const data = d.data();
                 const isMe = data.uid === auth.currentUser.uid;
                 const div = document.createElement('div');
+                div.className = "msg-bubble";
                 div.style.alignSelf = isMe ? 'flex-end' : 'flex-start';
                 div.style.background = isMe ? 'var(--primary)' : '#222';
-                div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.margin = '5px 0'; div.style.maxWidth = '80%';
-                div.innerHTML = `<small style="font-size:10px; opacity:0.5;">${data.usuario}</small><br>${data.texto}`;
+                div.style.padding = '12px 18px'; div.style.borderRadius = '20px'; div.style.margin = '5px 0'; div.style.maxWidth = '85%';
+                
+                if(isMe) div.onclick = () => openActionSheet(d.id, data);
+
+                let html = `<small style="font-size:10px; opacity:0.5; font-weight:700;">${data.usuario}</small><br>`;
+                if(data.media) {
+                    html += data.tipo === 'video' ? `<video src="${data.media}" class="chat-video" controls></video>` : `<img src="${data.media}" class="chat-img" onclick="event.stopPropagation(); openFullscreen(this.src)">`;
+                } else {
+                    html += `<span>${data.texto}</span>`;
+                }
+                html += `<span class="msg-time">${formatTime(data.createdAt)}</span>`;
+                div.innerHTML = html;
                 area.appendChild(div);
             });
             area.scrollTop = area.scrollHeight;
@@ -325,13 +267,62 @@
 
     document.getElementById('btnEnviar').onclick = async () => {
         const input = document.getElementById('msgInput');
-        if(!input.value) return;
-        await addDoc(collection(db, "mensagens"), {
-            texto: input.value, usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
-        });
+        if(!input.value.trim()) return;
+        if(editMsgId) {
+            await updateDoc(doc(db, "mensagens", editMsgId), { texto: input.value });
+            editMsgId = null;
+            document.getElementById('chat-title').innerText = "Global Elite";
+        } else {
+            await addDoc(collection(db, "mensagens"), {
+                texto: input.value, usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
+            });
+        }
         input.value = "";
     };
 
+    // Mídia
+    document.getElementById('chatMediaInput').onchange = (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = async () => {
+            await addDoc(collection(db, "mensagens"), {
+                media: reader.result, tipo: file.type.split('/')[0],
+                usuario: auth.currentUser.displayName, uid: auth.currentUser.uid, createdAt: serverTimestamp()
+            });
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Navegação e Outros
+    document.getElementById('cardGlobal').onclick = () => { showScreen('chat-screen'); loadChat(); };
+    document.getElementById('nav-home').onclick = () => showScreen('home-screen');
+    document.getElementById('nav-profile').onclick = () => showScreen('profile-screen');
+    document.getElementById('btnVoltarChat').onclick = () => showScreen('home-screen');
+    document.getElementById('btnSair').onclick = () => signOut(auth);
+    document.getElementById('btnEntrar').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('loginEmail').value, document.getElementById('loginPass').value);
+    document.getElementById('btnIrReg').onclick = () => showScreen('register-screen');
+    document.getElementById('btnConfirmarReg').onclick = async () => {
+        const res = await createUserWithEmailAndPassword(auth, document.getElementById('regEmail').value, document.getElementById('regPass').value);
+        await setDoc(doc(db, "usuarios", res.user.uid), { nome: document.getElementById('regNome').value, tag: Math.floor(1000+Math.random()*9000) });
+        await updateProfile(res.user, { displayName: document.getElementById('regNome').value });
+    };
+
+    async function loadUserData(uid) {
+        const d = await getDoc(doc(db, "usuarios", uid));
+        if(d.exists()) {
+            document.getElementById('profNome').innerText = d.data().nome;
+            document.getElementById('profTag').innerText = "#" + d.data().tag;
+        }
+    }
+
+    const stars = document.getElementById('stars');
+    for(let i=0; i<70; i++) {
+        const s = document.createElement('div');
+        s.style.position='absolute'; s.style.background='white'; s.style.width='2px'; s.style.height='2px';
+        s.style.top=Math.random()*100+'%'; s.style.left=Math.random()*100+'%';
+        stars.appendChild(s);
+    }
 </script>
 </body>
 </html>
