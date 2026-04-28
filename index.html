@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -50,12 +49,9 @@
         .msg-bubble { margin: 8px 0; max-width: 85%; display: flex; align-items: flex-end; gap: 10px; animation: msgSlide 0.3s ease; }
         @keyframes msgSlide { from { opacity: 0; transform: translateY(5px); } }
         .pfp-msg { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid var(--primary); object-fit: cover; }
-        .msg-content { padding: 12px 16px; border-radius: 20px; background: var(--glass); font-size: 14px; line-height: 1.4; position: relative; min-width: 80px; }
+        .msg-content { padding: 12px 16px; border-radius: 20px; background: var(--glass); font-size: 14px; line-height: 1.4; position: relative; }
         .me { align-self: flex-end; flex-direction: row-reverse; }
         .me .msg-content { background: var(--primary); box-shadow: var(--neon); }
-        
-        /* NOVO: Estilo para o Horário */
-        .msg-time { display: block; font-size: 10px; opacity: 0.6; text-align: right; margin-top: 4px; font-weight: 300; }
 
         /* NAV BAR */
         .nav-bar { 
@@ -195,7 +191,7 @@
 
     let currentUid, currentUser, activeMsgId, pressTimer;
 
-    // --- ESTRELAS ORIGINAIS ---
+    // --- ESTRELAS ORIGINAIS COM PROFUNDIDADE ---
     const canvas = document.getElementById('starCanvas');
     const ctx = canvas.getContext('2d');
     let stars = [];
@@ -272,7 +268,7 @@
         } else { navigateTo('login-screen'); }
     });
 
-    // --- CHAT ATUALIZADO COM HORÁRIO ---
+    // --- CHAT: ENVIAR, EDITAR, APAGAR ---
     function loadChat() {
         onSnapshot(query(collection(db, "mensagens"), orderBy("createdAt", "asc")), snaps => {
             const area = document.getElementById('chat-msgs');
@@ -280,14 +276,6 @@
             snaps.forEach(d => {
                 const m = d.data();
                 const isMe = m.uid === currentUid;
-                
-                // Formatação do Horário
-                let horarioStr = "";
-                if (m.createdAt) {
-                    const data = m.createdAt.toDate();
-                    horarioStr = data.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                }
-
                 const div = document.createElement('div');
                 div.className = `msg-bubble ${isMe ? 'me' : ''}`;
                 div.innerHTML = `
@@ -295,9 +283,7 @@
                     <div class="msg-content">
                         <small style="color:var(--accent); font-weight:bold; font-size:10px">${m.usuario}</small><br>
                         ${m.media ? `<img src="${m.media}" style="width:100%; border-radius:12px; margin-top:5px">` : m.texto}
-                        <span class="msg-time">${horarioStr}</span>
                     </div>`;
-                
                 if(isMe) {
                     div.onmousedown = div.ontouchstart = () => pressTimer = setTimeout(() => openActions(d.id, m.texto), 700);
                     div.onmouseup = div.ontouchend = () => clearTimeout(pressTimer);
@@ -374,4 +360,21 @@
         await updateDoc(doc(db, "usuarios", currentUid), { pfp: u });
     });
 
-  
+    document.getElementById('btnSalvarPerfil').onclick = async () => {
+        await updateDoc(doc(db, "usuarios", currentUid), {
+            nome: document.getElementById('profNomeInput').value,
+            bio: document.getElementById('profBio').value
+        });
+        alert("Sincronizado!");
+    };
+
+    document.getElementById('btnSair').onclick = () => signOut(auth);
+</script>
+</body>
+</html>
+
+
+
+
+Colocar horário as mensagens 
+E mantenha as mesmas coisas no html
