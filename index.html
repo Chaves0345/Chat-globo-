@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Elite OS | Quantum</title>
+    <title>Elite OS | Global Sync</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -20,63 +20,51 @@
         #bg-custom { position: fixed; inset: 0; z-index: -1; object-fit: cover; width: 100%; height: 100%; opacity: 0.5; pointer-events: none; }
         #starCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-        /* NOTÍCIAS */
-        #news-bar { position: fixed; top: -100px; left: 20px; right: 20px; background: var(--primary); padding: 15px; border-radius: 15px; z-index: 10000; box-shadow: var(--neon); transition: 0.5s; font-weight: bold; text-align: center; }
-        #news-bar.show { top: 25px; }
-
-        /* TELA CHEIA IMAGEM */
         #fs-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 50000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        #fs-img { max-width: 95%; max-height: 90%; border-radius: 10px; box-shadow: var(--neon); }
+        #fs-img { max-width: 90%; max-height: 85%; border-radius: 10px; box-shadow: var(--neon); }
 
-        /* TELAS */
         .screen { position: absolute; inset: 0; padding: 20px; padding-bottom: 180px; transition: 0.4s ease; visibility: hidden; opacity: 0; z-index: 10; transform: scale(0.95); }
         .screen-active { visibility: visible; opacity: 1; z-index: 20; transform: scale(1); }
 
-        /* CHAT */
         #chat-msgs { flex: 1; overflow-y: auto; display: flex; flex-direction: column; padding: 10px; z-index: 30; }
-        .msg-row { display: flex; gap: 10px; margin: 12px 0; align-items: flex-end; max-width: 85%; }
+        .msg-row { display: flex; gap: 12px; margin: 12px 0; align-items: flex-end; max-width: 85%; animation: msgIn 0.3s ease; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } }
         .row-me { align-self: flex-end; flex-direction: row-reverse; }
-        .chat-avatar { width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; flex-shrink: 0; background: #222; }
-        .msg-content { padding: 12px 16px; border-radius: 20px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        .chat-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--primary); object-fit: cover; flex-shrink: 0; background: #222; }
+        .msg-content { padding: 12px 16px; border-radius: 20px; background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); word-break: break-word; }
         .row-me .msg-content { background: var(--primary); box-shadow: var(--neon); border: none; }
         .msg-time { font-size: 10px; opacity: 0.7; margin-top: 5px; text-align: right; font-weight: bold; }
 
-        /* RANKING */
-        .rank-card { background: var(--glass); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); margin: 20px 0; box-shadow: var(--neon); }
+        .rank-card { background: var(--glass); padding: 20px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); margin: 20px 0; }
         .xp-bar { height: 12px; background: rgba(0,0,0,0.5); border-radius: 20px; overflow: hidden; margin-top: 10px; }
-        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: 1s ease-in-out; }
+        .xp-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); width: 0%; transition: 1s ease; }
 
-        /* INPUT */
         .input-area { position: fixed; bottom: 95px; left: 15px; right: 15px; display: flex; gap: 10px; align-items: center; background: rgba(10,10,15,0.95); padding: 12px 18px; border-radius: 40px; z-index: 100; border: 1px solid rgba(255,255,255,0.2); }
         #msgInput { flex: 1; background: none; border: none; color: white; outline: none; font-size: 16px; }
 
-        /* NAV */
         .nav-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 85px; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; align-items: center; z-index: 1000; border-top: 1px solid rgba(255,255,255,0.1); }
-        .nav-btn { font-size: 26px; opacity: 0.3; transition: 0.3s; }
-        .nav-btn.active { opacity: 1; color: var(--primary); text-shadow: var(--neon); }
+        .nav-btn { font-size: 26px; opacity: 0.3; cursor: pointer; }
+        .nav-btn.active { opacity: 1; color: var(--primary); }
     </style>
 </head>
 <body>
 
 <img id="bg-custom" src="">
 <canvas id="starCanvas"></canvas>
-<div id="news-bar">Sistema Atualizado</div>
 
-<div id="fs-overlay" onclick="this.style.display='none'">
-    <img id="fs-img" src="">
-</div>
+<div id="fs-overlay" onclick="this.style.display='none'"><img id="fs-img" src=""></div>
 
 <div class="app-container">
     <div id="home-screen" class="screen screen-active">
-        <h1 style="font-size: 45px; font-weight: 900; letter-spacing: -2px;">Elite OS</h1>
-        <div onclick="navigateTo('chat-screen')" style="margin-top:40px; background:linear-gradient(135deg, var(--primary), var(--accent)); padding:60px 20px; border-radius:35px; text-align: center; box-shadow: var(--neon); cursor:pointer;">
-            <h2 style="letter-spacing: 2px;">ABRIR TERMINAL</h2>
+        <h1 style="font-size: 45px; font-weight: 900;">Elite OS</h1>
+        <div onclick="navigateTo('chat-screen')" style="margin-top:40px; background:linear-gradient(135deg, var(--primary), var(--accent)); padding:60px 20px; border-radius:30px; text-align: center; box-shadow: var(--neon); cursor:pointer;">
+            <h2>INICIAR CHAT</h2>
         </div>
-        <button onclick="changeTheme()" style="margin-top:20px; width:100%; padding:20px; background:var(--glass); border-radius:20px; color:white; border:none; font-weight:bold; cursor:pointer;">🎨 MUDAR TEMA</button>
+        <button onclick="changeTheme()" style="margin-top:20px; width:100%; padding:20px; background:var(--glass); border-radius:20px; color:white; border:none; font-weight:bold; cursor:pointer;">🎨 ALTERAR TEMA</button>
     </div>
 
     <div id="profile-screen" class="screen">
-        <h1>Identidade</h1>
+        <h1>Perfil do Agente</h1>
         <center>
             <div style="position: relative; width: 130px; height: 130px; margin: 30px;">
                 <img id="profImg" src="https://via.placeholder.com/150" style="width:100%; height:100%; border-radius:50%; border:4px solid var(--primary); object-fit:cover;">
@@ -85,32 +73,31 @@
             </div>
 
             <div class="rank-card">
-                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:900;">
-                    <span id="rank-name">NÍVEL 1: RECRUTA</span>
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span id="rank-name">RECRUTA</span>
                     <span id="xp-val">0/100 XP</span>
                 </div>
                 <div class="xp-bar"><div id="xp-fill" class="xp-fill"></div></div>
             </div>
 
-            <input type="text" id="nameInput" placeholder="Nome do Agente" style="width:100%; padding:18px; background:var(--glass); border-radius:15px; color:white; border:none; margin-bottom:12px; outline:none;">
-            <button onclick="saveProfile()" style="width:100%; padding:18px; background:var(--primary); border-radius:15px; color:white; font-weight:bold; border:none; margin-bottom:10px;">SALVAR PERFIL</button>
-            
-            <button onclick="document.getElementById('bgInput').click()" style="width:100%; padding:18px; background:var(--glass); border-radius:15px; color:white; border:1px solid var(--primary); font-weight:bold;">🖼️ FUNDO GALERIA</button>
+            <input type="text" id="nameInput" placeholder="Seu Codinome" style="width:100%; padding:18px; background:var(--glass); border-radius:15px; color:white; border:none; margin-bottom:12px; outline:none;">
+            <button onclick="saveProfile()" style="width:100%; padding:18px; background:var(--primary); border-radius:15px; color:white; font-weight:bold; border:none; cursor:pointer;">SALVAR PERFIL</button>
+            <button onclick="document.getElementById('bgInput').click()" style="width:100%; padding:18px; background:var(--glass); border-radius:15px; color:white; border:1px solid var(--primary); margin-top:10px; cursor:pointer;">🖼️ MUDAR FUNDO</button>
             <input type="file" id="bgInput" hidden accept="image/*">
         </center>
     </div>
 
     <div id="chat-screen" class="screen" style="display:flex; flex-direction:column;">
-        <div style="display:flex; align-items:center; gap:15px; border-bottom:1px solid var(--glass); padding-bottom:15px;">
-            <button onclick="navigateTo('home-screen')" style="background:none; border:none; color:white; font-size:24px;">←</button>
-            <strong>CANAIS DE ELITE</strong>
+        <div style="padding-bottom:15px; border-bottom:1px solid var(--glass); display:flex; gap:15px; align-items:center;">
+            <button onclick="navigateTo('home-screen')" style="background:none; border:none; color:white; font-size:24px; cursor:pointer;">←</button>
+            <strong>NETWORK GLOBAL</strong>
         </div>
         <div id="chat-msgs"></div>
         <div class="input-area">
             <label for="chatMedia" style="font-size:24px; color:var(--primary); cursor:pointer;">📎</label>
             <input type="file" id="chatMedia" hidden accept="image/*">
-            <input type="text" id="msgInput" placeholder="Sinal seguro...">
-            <button id="btnEnviar" style="background:var(--primary); width:48px; height:48px; border-radius:50%; border:none; color:white;">➤</button>
+            <input type="text" id="msgInput" placeholder="Mensagem criptografada...">
+            <button id="btnEnviar" style="background:var(--primary); width:48px; height:48px; border-radius:50%; border:none; color:white; cursor:pointer;">➤</button>
         </div>
     </div>
 
@@ -122,19 +109,24 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, onSnapshot, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ⚠️ ATENÇÃO: COLOQUE SEUS DADOS DO FIREBASE ABAIXO PARA SALVAR AS MENSAGENS
-    const firebaseConfig = { apiKey: "SUA_API_AQUI", projectId: "SEU_PROJETO", appId: "SEU_APP" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBQ1q_RohLcImzWUA-5_An5XbfNkJ9G530",
+      authDomain: "jogo-f2bb1.firebaseapp.com",
+      projectId: "jogo-f2bb1",
+      storageBucket: "jogo-f2bb1.firebasestorage.app",
+      messagingSenderId: "599211128389",
+      appId: "1:599211128389:web:7f7b30489dfc83c708152c"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     let myId = localStorage.getItem('elite_id') || 'ag_' + Math.random().toString(36).substr(2, 5);
     localStorage.setItem('elite_id', myId);
-    
     let myXP = parseInt(localStorage.getItem('elite_xp')) || 0;
 
-    // NAVEGAÇÃO
     window.navigateTo = (id) => {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('screen-active'));
         document.getElementById(id).classList.add('screen-active');
@@ -142,108 +134,91 @@
         document.getElementById('n-profile').classList.toggle('active', id === 'profile-screen');
     };
 
-    // TEMAS E NOTÍCIAS
-    window.changeTheme = () => {
-        const t = ['default', 'matrix', 'cyber'];
-        const cur = document.body.dataset.theme || 'default';
-        const next = t[(t.indexOf(cur)+1)%3];
-        document.body.dataset.theme = next;
-        
-        const bar = document.getElementById('news-bar');
-        bar.innerText = "TEMA " + next.toUpperCase() + " ATIVADO";
-        bar.classList.add('show');
-        setTimeout(() => bar.classList.remove('show'), 2500);
-    };
-
-    // FUNDO E PERFIL
-    document.getElementById('bgInput').onchange = (e) => {
-        const r = new FileReader();
-        r.onload = (ev) => { document.getElementById('bg-custom').src = ev.target.result; localStorage.setItem('elite_bg', ev.target.result); };
-        r.readAsDataURL(e.target.files[0]);
-    };
-
-    document.getElementById('pfpInput').onchange = (e) => {
-        const r = new FileReader();
-        r.onload = (ev) => { document.getElementById('profImg').src = ev.target.result; localStorage.setItem('elite_pfp', ev.target.result); };
-        r.readAsDataURL(e.target.files[0]);
-    };
-
-    window.saveProfile = () => {
-        localStorage.setItem('elite_nome', document.getElementById('nameInput').value);
-        alert("Perfil Sincronizado!");
-    };
-
-    // LÓGICA DO RANKING
     const updateRank = () => {
         const level = Math.floor(myXP / 100) + 1;
-        const progress = myXP % 100;
-        document.getElementById('rank-name').innerText = `NÍVEL ${level}: ${level > 5 ? 'ELITE' : 'RECRUTA'}`;
-        document.getElementById('xp-val').innerText = `${progress}/100 XP`;
-        document.getElementById('xp-fill').style.width = progress + "%";
+        const prog = myXP % 100;
+        document.getElementById('rank-name').innerText = level > 5 ? "AGENTE ELITE" : "RECRUTA NÍVEL " + level;
+        document.getElementById('xp-val').innerText = prog + "/100 XP";
+        document.getElementById('xp-fill').style.width = prog + "%";
         localStorage.setItem('elite_xp', myXP);
     };
 
-    // CHAT E IMAGENS
+    document.getElementById('pfpInput').onchange = (e) => {
+        const r = new FileReader(); r.onload = (ev) => { document.getElementById('profImg').src = ev.target.result; localStorage.setItem('elite_pfp', ev.target.result); };
+        r.readAsDataURL(e.target.files[0]);
+    };
+    document.getElementById('bgInput').onchange = (e) => {
+        const r = new FileReader(); r.onload = (ev) => { document.getElementById('bg-custom').src = ev.target.result; localStorage.setItem('elite_bg', ev.target.result); };
+        r.readAsDataURL(e.target.files[0]);
+    };
+
+    window.saveProfile = () => { localStorage.setItem('elite_nome', document.getElementById('nameInput').value); alert("Sincronizado!"); };
+
     const enviar = async (txt = "", img = null) => {
         if(!txt && !img) return;
-        const horaLocal = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
+        const agora = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
         try {
             await addDoc(collection(db, "mensagens"), {
-                uid: myId, texto: txt, media: img,
+                uid: myId, 
+                texto: txt, 
+                media: img,
                 usuario: localStorage.getItem('elite_nome') || "Agente",
                 pfp: localStorage.getItem('elite_pfp') || "",
                 createdAt: serverTimestamp(),
-                time: horaLocal
+                hora: agora
             });
-            // Ganha XP ao enviar
-            myXP += 20; 
-            updateRank();
-        } catch (e) {
-            console.error("Erro ao salvar! Verifique sua config Firebase.");
-            alert("Erro ao enviar. Verifique se configurou o Firebase no código.");
-        }
+            myXP += 20; updateRank();
+        } catch (e) { alert("Erro ao enviar: " + e.message); }
     };
 
-    document.getElementById('btnEnviar').onclick = () => { const i = document.getElementById('msgInput'); enviar(i.value); i.value = ""; };
-    
-    document.getElementById('chatMedia').onchange = (e) => { 
-        const r = new FileReader(); 
-        r.onload = (ev) => enviar("", ev.target.result); 
-        r.readAsDataURL(e.target.files[0]); 
-    };
+    document.getElementById('btnEnviar').onclick = () => { const i = document.getElementById('msgInput'); if(i.value.trim()){ enviar(i.value); i.value = ""; } };
+    document.getElementById('chatMedia').onchange = (e) => { const r = new FileReader(); r.onload = (ev) => enviar("", ev.target.result); r.readAsDataURL(e.target.files[0]); };
 
-    // ESCUTA MENSAGENS EM TEMPO REAL
-    onSnapshot(query(collection(db, "mensagens"), orderBy("createdAt", "asc")), snap => {
-        const area = document.getElementById('chat-msgs'); area.innerHTML = "";
+    // ESCUTA EM TEMPO REAL COM ORDENAÇÃO MANUAL (Para evitar erro de índice)
+    onSnapshot(collection(db, "mensagens"), (snap) => {
+        const area = document.getElementById('chat-msgs');
+        let lista = [];
+        
         snap.forEach(d => {
-            const m = d.data(); const isMe = m.uid === myId;
-            const div = document.createElement('div');
-            div.className = `msg-row ${isMe ? 'row-me' : ''}`;
+            lista.push({id: d.id, ...d.data()});
+        });
+
+        // Ordena por tempo de criação
+        lista.sort((a, b) => {
+            const timeA = a.createdAt?.seconds || 0;
+            const timeB = b.createdAt?.seconds || 0;
+            return timeA - timeB;
+        });
+
+        area.innerHTML = "";
+        lista.forEach(m => {
+            const isMe = m.uid === myId;
+            const div = document.createElement('div'); div.className = `msg-row ${isMe ? 'row-me' : ''}`;
             div.innerHTML = `
                 <img class="chat-avatar" src="${m.pfp || 'https://via.placeholder.com/150'}">
                 <div class="msg-content">
-                    <small style="font-size:10px; color:var(--accent); font-weight:900;">${m.usuario}</small><br>
-                    ${m.media ? `<img src="${m.media}" style="width:100%; border-radius:15px; margin-top:5px;" onclick="viewImg('${m.media}')">` : m.texto}
-                    <div class="msg-time">${m.time || '--:--'}</div>
+                    <small style="color:var(--accent); font-weight:900; font-size:10px;">${m.usuario}</small><br>
+                    ${m.media ? `<img src="${m.media}" style="width:100%; border-radius:15px; margin-top:5px;" onclick="window.viewImg('${m.media}')">` : m.texto}
+                    <div class="msg-time">${m.hora || '--:--'}</div>
                 </div>`;
             area.appendChild(div);
         });
         area.scrollTop = area.scrollHeight;
+    }, (error) => {
+        alert("Erro na conexão: " + error.message);
     });
 
-    window.viewImg = (src) => {
-        document.getElementById('fs-img').src = src;
-        document.getElementById('fs-overlay').style.display = 'flex';
+    window.viewImg = (s) => { document.getElementById('fs-img').src = s; document.getElementById('fs-overlay').style.display = 'flex'; };
+    window.changeTheme = () => {
+        const t = ['default', 'matrix', 'cyber'];
+        document.body.dataset.theme = t[(t.indexOf(document.body.dataset.theme || 'default')+1)%3];
     };
 
-    // ESTRELAS 3D
     const cv = document.getElementById('starCanvas'); const cx = cv.getContext('2d'); let st = [];
     function init() { cv.width = window.innerWidth; cv.height = window.innerHeight; st = []; for(let i=0; i<80; i++) st.push({x:Math.random()*cv.width, y:Math.random()*cv.height, z:Math.random()*cv.width, s:Math.random()*1.5}); }
     function anim() { cx.clearRect(0,0,cv.width,cv.height); cx.fillStyle="#fff"; st.forEach(s => { let x = (s.x - cv.width/2) * (cv.width/s.z) + cv.width/2; let y = (s.y - cv.height/2) * (cv.width/s.z) + cv.height/2; let rad = s.s * (cv.width/s.z); cx.beginPath(); cx.arc(x, y, rad, 0, Math.PI*2); cx.fill(); s.z -= 0.8; if(s.z<=0) s.z=cv.width; }); requestAnimationFrame(anim); }
     
     init(); anim(); updateRank();
-    
     if(localStorage.getItem('elite_pfp')) document.getElementById('profImg').src = localStorage.getItem('elite_pfp');
     if(localStorage.getItem('elite_bg')) document.getElementById('bg-custom').src = localStorage.getItem('elite_bg');
     document.getElementById('nameInput').value = localStorage.getItem('elite_nome') || "";
